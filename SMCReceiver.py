@@ -1,14 +1,13 @@
 import socket
 import keyboard
 
-def simulate_button_press(button_id, is_pressed):
-    if button_id == 4:  # Assuming button 4 represents the Share button
-        if is_pressed:
-            keyboard.press('f23')
-            keyboard.press('f24')
-        else:
-            keyboard.release('f23')
-            keyboard.release('f24')
+def simulate_button_press(is_pressed):
+    if is_pressed:
+        keyboard.press('f23')
+        keyboard.press('f24')
+    else:
+        keyboard.release('f23')
+        keyboard.release('f24')
 
 def receive_input(port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,9 +23,8 @@ def receive_input(port):
             if not data:
                 break
             button_data = data.decode().split()
-            button_id = int(button_data[1])
             is_pressed = bool(int(button_data[2]))
-            simulate_button_press(button_id, is_pressed)
+            simulate_button_press(is_pressed)
 
 def main():
     # Reciever PC network configuration

@@ -1,5 +1,6 @@
 import socket
 import configparser
+import tkinter
 from tkinter import Tk, ttk, Label, Entry, Button
 import os
 from os import environ
@@ -22,52 +23,75 @@ def send_input(input_data, host, port):
     sock.sendall(input_data.encode())
     sock.close()
 
-def update_config(host, port):
+def update_config(host, port, buttonIndex):
     config = configparser.ConfigParser()
-    config['Network'] = {
+    config['Settings'] = {
         'ReceiverIP': host,
-        'ReceiverPort': port
+        'ReceiverPort': port,
+        'ButtonIndex': buttonIndex
         }
     with open(config_file_path, 'w') as config_file:
         config.write(config_file)
 
 def get_config():
-    if 'Network' not in config:
-        update_config('', 4743)
+    if 'Settings' not in config:
+        update_config('', 4743, 4)
     config.read(config_file_path)
-    host = config['Network']['ReceiverIP']
-    port = config['Network']['ReceiverPort']
-    return host, port
+    host = config['Settings']['ReceiverIP']
+    port = config['Settings']['ReceiverPort']
+    buttonIndex = config['Settings']['Buttonindex']
+    return host, port, buttonIndex
 
 def save_config():
     host = ip_entry.get()
     port = 4743 # port_entry.get()
-    update_config(host, port)
+    buttonIndex = button_entry.get()
+    update_config(host, port, buttonIndex)
     root.destroy()
+
+def show_hide_buttons():
+    if checkbox_var.get() == 1:
+        # port_label.pack()
+        # port_entry.pack()
+        button_label.pack()
+        button_entry.pack()
+        root.geometry("300x195")
+    else:
+        # port_label.pack_forget()
+        # port_entry.pack_forget()
+        button_label.pack_forget()
+        button_entry.pack_forget()
+        root.geometry("300x110")
 
 def main():
     pygame.init()
     pygame.joystick.init()
-    joystick = pygame.joystick.Joystick(0)
-    joystick.init()
+    try:
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
 
-    receiver_ip, receiver_port = get_config()
-    print("Connected")
-    print("Closing the window will end the connection!")
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.JOYBUTTONDOWN or event.type == pygame.JOYBUTTONUP:
-                if event.button == 4:
-                    button_state = joystick.get_button(event.button)
-                    input_data = f"Button {event.button} {button_state}"
-                    send_input(input_data, receiver_ip, receiver_port)
+        receiver_ip, receiver_port, button_index = get_config()
+        print("Connected")
+        print("Closing the window will end the connection!")
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.JOYBUTTONDOWN or event.type == pygame.JOYBUTTONUP:
+                    if event.button == int(button_index):
+                        button_state = joystick.get_button(event.button)
+                        input_data = f"Button {event.button} {button_state}"
+                        try:
+                            send_input(input_data, receiver_ip, receiver_port)
+                        except:
+                            print("Connection interrupted! Press the button again!")
+    except:
+        print("No controller found!")
 
 if __name__ == "__main__":
     root = Tk()
     root.title("Sync Mute Control")
     
     window_width = 300
-    window_height = 150
+    window_height = 110
 
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
@@ -84,17 +108,34 @@ if __name__ == "__main__":
     ip_entry.insert(0, get_config()[0]) 
     ip_entry.pack(pady=5)
 
+    # Create a variable to track the checkbox state
+    checkbox_var = tkinter.IntVar()
+    # Create the checkbox
+    checkbox = ttk.Checkbutton(root, text="Advanced Settings", variable=checkbox_var, command=show_hide_buttons)
+    checkbox.pack()
+
     """
     port_label = ttk.Label(root, text="Receiver Port:")
     port_label.pack()
+    port_label.pack_forget()
     port_entry = ttk.Entry(root)
     port_entry.insert(0, str(get_config()[1]))
     port_entry.pack(pady=5)
+    port_entry.pack_forget()
     """
+
+    # Create the extra buttons
+    button_label = ttk.Label(root, text="Button Index:")
+    button_label.pack()
+    button_label.pack_forget()
+    button_entry = ttk.Entry(root)
+    button_entry.insert(0, str(get_config()[2]))
+    button_entry.pack(pady=5)
+    button_entry.pack_forget()
 
     save_button = ttk.Button(root, text="Save", command=save_config)
     save_button.pack(pady=5)
-    
+
     root.mainloop()
 
     main()
