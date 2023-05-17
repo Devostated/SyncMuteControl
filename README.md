@@ -27,7 +27,7 @@ currently only tested on Windows with a Sony Playstation 5 DualSense Controller
 * Record a new keybind and press the share button on your PS5 Controller
 
 ## Controller Layout
-![controller](https://github.com/Devostated/SyncMuteControl/assets/30211694/bbdafa21-1efb-4277-8cc7-90ba87e9fbf7)
+![controller](https://github.com/Devostated/SyncMuteControl/assets/30211694/ec64b5b0-8cfb-4e26-a888-8e96b732eb9d)
 
 
 ## Future plans
