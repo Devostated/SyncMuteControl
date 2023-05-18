@@ -20,6 +20,7 @@ currently only tested on Windows with a Sony Playstation 5 DualSense Controller
 * Launch the Reciever on the streaming PC
 ### 3.1 Advanced Settings
 * Set up a different button to mute. Check out the [Controller Layout](#controller-layout) below
+* Leave it empty to not bind any key
 
 ### 4. Setup mute
 * Open Discord settings
