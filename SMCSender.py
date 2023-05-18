@@ -23,30 +23,33 @@ def send_input(input_data, host, port):
     sock.sendall(input_data.encode())
     sock.close()
 
-def update_config(host, port, buttonIndex):
+def update_config(host, port, buttonIndex0, buttonIndex1):
     config = configparser.ConfigParser()
     config['Settings'] = {
         'ReceiverIP': host,
         'ReceiverPort': port,
-        'ButtonIndex': buttonIndex
+        'buttonIndex0': buttonIndex0,
+        'buttonIndex1': buttonIndex1
         }
     with open(config_file_path, 'w') as config_file:
         config.write(config_file)
 
 def get_config():
     if 'Settings' not in config:
-        update_config('', 4743, 4)
+        update_config('', 4743, 4, '')
     config.read(config_file_path)
-    host = config['Settings']['ReceiverIP']
-    port = config['Settings']['ReceiverPort']
-    buttonIndex = config['Settings']['Buttonindex']
-    return host, port, buttonIndex
+    host = config['Settings'].get('ReceiverIP', '')
+    port = config['Settings'].get('ReceiverPort', '')
+    buttonIndex0 = config['Settings'].get('buttonIndex0', '')
+    buttonIndex1 = config['Settings'].get('buttonIndex1', '')
+    return host, port, buttonIndex0, buttonIndex1
 
 def save_config():
     host = ip_entry.get()
     port = 4743 # port_entry.get()
-    buttonIndex = button_entry.get()
-    update_config(host, port, buttonIndex)
+    buttonIndex0 = button_entry.get()
+    buttonIndex1 = button1_entry.get()
+    update_config(host, port, buttonIndex0, buttonIndex1)
     root.destroy()
 
 def show_hide_buttons():
@@ -55,13 +58,20 @@ def show_hide_buttons():
         # port_entry.pack()
         button_label.pack()
         button_entry.pack()
+        button1_label.pack()
+        button1_entry.pack()
         root.geometry("300x195")
     else:
         # port_label.pack_forget()
         # port_entry.pack_forget()
         button_label.pack_forget()
         button_entry.pack_forget()
+        button1_label.pack_forget()
+        button1_entry.pack_forget()
         root.geometry("300x110")
+
+def validate_input(text):
+    return text.isdigit() or text == ""
 
 def main():
     pygame.init()
@@ -70,21 +80,29 @@ def main():
         joystick = pygame.joystick.Joystick(0)
         joystick.init()
 
-        receiver_ip, receiver_port, button_index = get_config()
+        receiver_ip, receiver_port, receiver_bindex0, receiver_bindex1 = get_config()
         print("Connected")
         print("Closing the window will end the connection!")
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.JOYBUTTONDOWN or event.type == pygame.JOYBUTTONUP:
-                    if event.button == int(button_index):
+                    if event.button == int(receiver_bindex0):
                         button_state = joystick.get_button(event.button)
-                        input_data = f"Button {event.button} {button_state}"
+                        input_data = f"Button {0} {button_state}"
+                        try:
+                            send_input(input_data, receiver_ip, receiver_port)
+                        except:
+                            print("Connection interrupted! Press the button again!")
+
+                    if event.button == int(receiver_bindex1):
+                        button_state = joystick.get_button(event.button)
+                        input_data = f"Button {1} {button_state}"
                         try:
                             send_input(input_data, receiver_ip, receiver_port)
                         except:
                             print("Connection interrupted! Press the button again!")
     except:
-        print("No controller found!")
+        print("Launcher or controller not found!")
 
 if __name__ == "__main__":
     root = Tk()
@@ -125,13 +143,22 @@ if __name__ == "__main__":
     """
 
     # Create the extra buttons
-    button_label = ttk.Label(root, text="Button Index:")
+    button_label = ttk.Label(root, text="Keybind:")
     button_label.pack()
     button_label.pack_forget()
-    button_entry = ttk.Entry(root)
+    button_entry = ttk.Entry(root, validate="key", validatecommand=(root.register(validate_input), "%P"))
     button_entry.insert(0, str(get_config()[2]))
     button_entry.pack(pady=5)
     button_entry.pack_forget()
+
+    # Create the second extra buttons
+    button1_label = ttk.Label(root, text="Keybind:")
+    button1_label.pack()
+    button1_label.pack_forget()
+    button1_entry = ttk.Entry(root, validate="key", validatecommand=(root.register(validate_input), "%P"))
+    button1_entry.insert(0, str(get_config()[3]))
+    button1_entry.pack(pady=5)
+    button1_entry.pack_forget()
 
     save_button = ttk.Button(root, text="Save", command=save_config)
     save_button.pack(pady=5)
