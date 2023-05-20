@@ -2,7 +2,7 @@
 A tool for dual setups to mute themself with a controller on a streaming pc
 
 ## Requirements
-currently only tested on Windows with a Sony Playstation 5 DualSense Controller
+Currently only tested on Windows with a Playstation 5 DualSense and Xbox One Controller on a wired connection.
 
 ## How to use
 
@@ -25,10 +25,12 @@ currently only tested on Windows with a Sony Playstation 5 DualSense Controller
 ### 4. Setup mute
 * Open Discord settings
 * Add a new keybind and set it to `Toggle Mute`
-* Record a new keybind and press your choosen button on your PS5 controller
+* Record a new keybind and press your choosen button on your controller
 
 ## Controller Layout
 ![controller](https://github.com/Devostated/SyncMuteControl/assets/30211694/9b6d29e3-5a26-43fa-9336-4bd4428ea1cf)
+![controllerXboxOne](https://github.com/Devostated/SyncMuteControl/assets/30211694/f5203305-0bdb-411b-b55f-5878b86d9ad1)
+
 
 
 ## Future plans
