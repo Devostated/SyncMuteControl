@@ -7,7 +7,7 @@ Currently only tested on Windows with a Playstation 5 DualSense and Xbox One Con
 ## How to use
 
 ### 1. Installation
-* [Download](https://github.com/Devostated/SyncMuteControl/releases) the SyncMuteControlSender on your gaming PC and SyncMuteControlReciever on your streaming PC
+* [Download](https://github.com/Devostated/SyncMuteControl/releases) the SMCSender.exe on your gaming PC and SMCReceiver.exe on your streaming PC
 * Place the exe files where ever you like
 
 ### 2. Get your local IP
